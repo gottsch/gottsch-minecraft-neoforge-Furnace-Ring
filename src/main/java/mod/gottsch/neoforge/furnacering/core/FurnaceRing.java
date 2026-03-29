@@ -13,6 +13,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
@@ -38,18 +39,18 @@ public class FurnaceRing {
         // TODO register integrations
         // register the items to a creative tab
         modEventBus.addListener(this::addCreative);
-        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::clientSetup);
+        modEventBus.addListener(this::commonSetup);
     }
 
-    private void setup(FMLClientSetupEvent event) {
-            // enqueueWork ensures the code runs on the main render thread
-        // Call your registration method here
+    private void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(FurnaceRingItemProperties::addCustomItemProperties);
+    }
 
+    private void commonSetup(FMLCommonSetupEvent event) {
         if (CuriosIntegration.isLoaded()) {
-            // We call this in a separate method or class to prevent
-            // the ClassLoader from seeing Curios classes prematurely.
-            CuriosIntegration.init();
+            // enqueueWork to avoid potential registry access issues during parallel mod loading
+            event.enqueueWork(CuriosIntegration::init);
         }
     }
 

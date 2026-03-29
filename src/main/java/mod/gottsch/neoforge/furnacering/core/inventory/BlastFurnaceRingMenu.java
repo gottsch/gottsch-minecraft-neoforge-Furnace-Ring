@@ -18,7 +18,7 @@ public class BlastFurnaceRingMenu extends BaseFurnaceRingMenu {
 
     // server constructor
     public BlastFurnaceRingMenu(int containerId, Inventory playerInv, ItemStack stack) {
-        super(FurnaceRingContainers.BLAST_FURNACE_RING_MENU.get(), RecipeType.SMELTING, RecipeBookType.FURNACE,
+        super(FurnaceRingContainers.BLAST_FURNACE_RING_MENU.get(), RecipeType.BLASTING, RecipeBookType.BLAST_FURNACE,
                 containerId, playerInv, stack);
 
     }

@@ -31,11 +31,7 @@ public abstract class BaseFurnaceRingMenu extends AbstractFurnaceRingMenu {
     }
 
     protected static ItemStack decodeStack(RegistryFriendlyByteBuf buffer) {
-        if (buffer instanceof RegistryFriendlyByteBuf registryBuf) {
-            return ItemStack.OPTIONAL_STREAM_CODEC.decode(registryBuf);
-        }
-        // fallback for safety
-        return ItemStack.EMPTY;
+        return ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
     }
 
     private static Container createContainer(ItemStack stack) {

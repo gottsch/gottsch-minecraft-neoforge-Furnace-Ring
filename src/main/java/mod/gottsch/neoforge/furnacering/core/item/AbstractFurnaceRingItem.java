@@ -25,7 +25,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -102,45 +101,12 @@ public abstract class AbstractFurnaceRingItem extends Item {
                 contents.copyInto(tempContainer.getItems());
             }
 
-            // create/Get the progress data (burn time, cook time, etc.)
-            ContainerData data = new ContainerData() {
-                @Override
-                public int get(int index) {
-                    // fetch the latest component from the stack every time it's called
-                    FurnaceState s = ComponentHelper.stateOrDefault(stack);
-                    return switch (index) {
-                        case 0 -> s.burnTime();
-                        case 1 -> s.totalBurnTime();
-                        case 2 -> s.cookTime();
-                        case 3 -> s.totalCookTime();
-                        default -> 0;
-                    };
-                }
-
-                @Override
-                public void set(int index, int value) {
-                    // when the Menu logic updates a value, we must save it to the stack immediately
-                    FurnaceState s = ComponentHelper.stateOrDefault(stack);
-                    FurnaceState newState = switch (index) {
-                        case 0 -> s.withBurnTime(value);
-                        case 1 -> s.withTotalBurnTime(value);
-                        case 2 -> s.withCookTime(value);
-                        case 3 -> s.withTotalCookTime(value);
-                        default -> s;
-                    };
-                    stack.set(FurnaceRingComponents.FURNACE_STATE.get(), newState);
-                }
-
-                @Override
-                public int getCount() { return 4; }
-            };
-
             serverPlayer.openMenu(new SimpleMenuProvider(
                     (id, inv, p) -> getRingMenu(id, inv, stack),
                     Component.literal(stack.getHoverName().getString())
             ), buf -> {
                 // write the stack to the buffer
-                ItemStack.STREAM_CODEC.encode(buf, stack);
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, stack);
             });
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
@@ -169,7 +135,7 @@ public abstract class AbstractFurnaceRingItem extends Item {
             // slotId is the actual slot index so the test needs to be <= to ensure we check that slot as well
             int ringCount = 0;
             for (int i = 0; i <= slotId; i++) {
-                if (player.getInventory().getItem(i).getItem() instanceof FurnaceRingItem) {
+                if (player.getInventory().getItem(i).getItem() instanceof AbstractFurnaceRingItem) {
                     ringCount++;
                     // if this specific stack is the 3rd+ ring, it's disabled
                     if (player.getInventory().getItem(i) == stack && ringCount > 2) {
@@ -209,7 +175,7 @@ public abstract class AbstractFurnaceRingItem extends Item {
         // consume new fuel if needed
         if (state.burnTime() <= 0 && canSmelt) {
             ItemStack fuelStack = items.get(FUEL_SLOT);
-            int fuelValue = fuelStack.getBurnTime(RecipeType.SMELTING);
+            int fuelValue = fuelStack.getBurnTime(getRecipeType());
 
             if (fuelValue > 0) {
                 int totalCookTime = getTotalCookTime(level, items);
@@ -290,7 +256,7 @@ public abstract class AbstractFurnaceRingItem extends Item {
                     }
 
                     if (input.is(Blocks.WET_SPONGE.asItem()) && !items.get(FUEL_SLOT).isEmpty() && items.get(FUEL_SLOT).is(Items.BUCKET)) {
-                        items.set(1, new ItemStack(Items.WATER_BUCKET));
+                        items.set(FUEL_SLOT, new ItemStack(Items.WATER_BUCKET));
                     }
 
                     input.shrink(1);
