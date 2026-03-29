@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "furnacering:furnace_ring",
+    "furnacering:blast_furnace_ring",
+    "furnacering:smoker_ring"
+  ]
+}

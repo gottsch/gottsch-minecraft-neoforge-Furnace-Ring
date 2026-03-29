@@ -1,0 +1,20 @@
+{
+  "pools": [{
+    "name": "furnacering_uncommon_items",
+    "rolls": 1,
+    "entries": [
+      {
+        "entryName" : "smoker_ring",
+        "type" : "minecraft:item",
+        "name" : "furnacering:smoker_ring",
+        "weight" : 1,
+        "conditions": [
+          {
+            "condition": "random_chance",
+            "chance": 0.06
+          }
+        ]
+      }
+    ]
+  }]
+}

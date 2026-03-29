@@ -1,0 +1,20 @@
+{
+  "pools": [{
+    "name": "furnacering_common_items",
+    "rolls": 1,
+    "entries": [
+      {
+        "entryName" : "furnace_ring",
+        "type" : "minecraft:item",
+        "name" : "furnacering:furnace_ring",
+        "weight" : 1,
+        "conditions": [
+          {
+            "condition": "random_chance",
+            "chance": 0.08
+          }
+        ]
+      }
+    ]
+  }]
+}
